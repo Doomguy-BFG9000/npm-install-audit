@@ -5,7 +5,7 @@
 const fs = require("fs");
 const path = require("path");
 
-if (process.argv.includes("--version")) { console.log("npm-install-audit 1.2.1"); process.exit(0); }
+if (process.argv.includes("--version")) { console.log("npm-install-audit 1.3.0"); process.exit(0); }
 
 const args = process.argv.slice(2);
 const jsonMode = args.includes("--json");
@@ -120,6 +120,31 @@ function checkSource(file) {
   }
 }
 
+const OFFICIAL_REGISTRY = /^https?:\/\/registry\.(npmjs\.org|yarnpkg\.com)\/?$/i;
+
+function checkRegistryConfig(file) {
+  let text = "";
+  try { if (fs.statSync(file).size < 2e5) text = fs.readFileSync(file, "utf8"); } catch { return; }
+  const yarn = /\.yarnrc\.yml$/.test(file);
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#") || line.startsWith(";")) continue;
+    if (yarn ? /^npmAuth(Token|Ident)\s*:/.test(line) : /(^|:)_(authToken|auth|password)\s*=/.test(line)) {
+      flag(file, "ships a registry auth token, so the install can fetch packages the public registry does not show (token not printed)");
+      continue;
+    }
+    const m = yarn
+      ? line.match(/^npmRegistryServer\s*:\s*["']?([^"'\s]+)/)
+      : line.match(/^(@[\w.-]+:)?registry\s*[=\s]\s*["']?([^"'\s]+)/);
+    if (!m) continue;
+    const url = yarn ? m[1] : m[2];
+    const scope = yarn ? "" : (m[1] || "").slice(0, -1);
+    if (!OFFICIAL_REGISTRY.test(url)) {
+      flag(file, (scope ? scope + " packages install" : "installs come") + " from another registry: " + url);
+    }
+  }
+}
+
 function checkGit(dir) {
   const gitDir = path.join(dir, ".git");
   let st;
@@ -170,6 +195,7 @@ function walk(dir, depth) {
     if (e.isDirectory()) { walk(p, depth + 1); continue; }
     if (!e.isFile()) continue;
     if (e.name === "package.json") { checkPackage(p); continue; }
+    if (e.name === ".npmrc" || e.name === ".yarnrc" || e.name === ".yarnrc.yml") { checkRegistryConfig(p); continue; }
     if (SOURCE_EXT.test(e.name)) {
       let size = 0;
       try { size = fs.statSync(p).size; } catch { continue; }
