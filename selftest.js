@@ -44,6 +44,13 @@ write("ts-bad/src/types.cts", '// plain type-only file, safe\nexport type Foo = 
 write("ts-clean/package.json", JSON.stringify({ name: "ts-clean" }));
 write("ts-clean/src/index.ts", 'export const greet = (name: string) => `Hello, ${name}`;\n');
 
+// Registry config fixtures (v1.3.0): a token or a private registry in the project
+write("npmrc-bad/package.json", JSON.stringify({ name: "npmrc-bad" }));
+write("npmrc-bad/frontend/.npmrc", "//registry.npmjs.org/:_authToken=npm_SECRET123\n@acme:registry=https://npm.evil.example/\n");
+write("npmrc-bad/.yarnrc.yml", 'npmRegistryServer: "https://yarn.evil.example"\n');
+write("npmrc-ok/package.json", JSON.stringify({ name: "npmrc-ok" }));
+write("npmrc-ok/.npmrc", "registry=https://registry.npmjs.org/\nsave-exact=true\n");
+
 // Non-registry dependency fixtures (PR #4 feature)
 write(
   "git-dep/package.json",
@@ -75,7 +82,7 @@ const check = (name, cond) => {
 
 // Version check (v1.1.0)
 const v = spawnSync(process.execPath, [path.join(__dirname, "audit.js"), "--version"], { encoding: "utf8" });
-check("--version prints version", v.status === 0 && /npm-install-audit 1\.2\.1/.test(v.stdout));
+check("--version prints version", v.status === 0 && /npm-install-audit 1\.3\.0/.test(v.stdout));
 
 // Original checks
 const clean = run(path.join(tmp, "clean"));
@@ -124,6 +131,15 @@ check("flags non-tarball URL dep", /"risky-url".*URL dependency/.test(gitDep.std
 check("does not flag ~range or dist-tag", !/"scoped-safe"|"tag-safe"/.test(gitDep.stdout));
 
 // PR #4: --json flag checks
+const npmrcBad = run(path.join(tmp, "npmrc-bad"));
+check("npmrc-bad fixture exits 1", npmrcBad.status === 1);
+check("flags auth token in .npmrc", /frontend[\\/]\.npmrc: ships a registry auth token/.test(npmrcBad.stdout));
+check("does not print the token", !/SECRET123/.test(npmrcBad.stdout));
+check("flags scoped private registry", /@acme packages install from another registry: https:\/\/npm\.evil\.example/.test(npmrcBad.stdout));
+check("flags yarn registry server", /\.yarnrc\.yml: installs come from another registry: https:\/\/yarn\.evil\.example/.test(npmrcBad.stdout));
+const npmrcOk = run(path.join(tmp, "npmrc-ok"));
+check("official registry in .npmrc is not flagged", npmrcOk.status === 0);
+
 const jsonClean = run(path.join(tmp, "clean"), ["--json"]);
 check("--json clean exits 0", jsonClean.status === 0);
 check("--json clean is valid JSON", (() => { try { JSON.parse(jsonClean.stdout); return true; } catch { return false; } })());
