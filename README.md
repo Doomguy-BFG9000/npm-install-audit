@@ -73,6 +73,7 @@ Exit code is 1 if anything is flagged, 0 if clean, 2 if the path cannot be read.
 - base64 decoding at runtime
 - `curl | sh` and `wget | bash` pipes
 - paths to SSH keys, cloud credentials, wallet files and browser data
+- project `.npmrc` overrides for `script-shell`, `ignore-scripts=false`, `node-options` and `init-module`, which change the programs or scripts npm runs
 - very long encoded strings
 - active git hooks in `.git/hooks` (anything that is not a `.sample` file), and hooks that download and run code
 - risky `.git/config` entries: `core.hooksPath`, `core.fsmonitor`, `sshCommand`, `pager`, `editor`, aliases that run shell commands, filter and diff drivers
