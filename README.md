@@ -77,6 +77,7 @@ Exit code is 1 if anything is flagged, 0 if clean, 2 if the path cannot be read.
 - active git hooks in `.git/hooks` (anything that is not a `.sample` file), and hooks that download and run code
 - risky `.git/config` entries: `core.hooksPath`, `core.fsmonitor`, `sshCommand`, `pager`, `editor`, aliases that run shell commands, filter and diff drivers
 - VS Code tasks that run when the folder is opened (`"runOn": "folderOpen"`)
+- `yarnPath` in `.yarnrc.yml`, which configures Yarn to run a project-supplied binary instead of the installed one (also common in legitimate projects)
 
 ## Before any git command
 
