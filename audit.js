@@ -5,7 +5,7 @@
 const fs = require("fs");
 const path = require("path");
 
-if (process.argv.includes("--version")) { console.log("npm-install-audit 1.2.0"); process.exit(0); }
+if (process.argv.includes("--version")) { console.log("npm-install-audit 1.2.1"); process.exit(0); }
 
 const args = process.argv.slice(2);
 const jsonMode = args.includes("--json");
@@ -53,7 +53,7 @@ const NON_REGISTRY_DEP = [
   [/^[A-Za-z0-9][\w.-]*\/[\w.-]+(#\S*)?$/, "bare user/repo GitHub dependency (bypasses npm registry)"],
 ];
 
-const SOURCE_EXT = /\.(js|cjs|mjs|ts|mts|cts|sh)$/;
+const SOURCE_EXT = /\.(js|cjs|mjs|jsx|ts|mts|cts|tsx|sh)$/;
 
 const GIT_CONFIG_RISKY = [
   [/^\s*hookspath\s*=/i, "core.hooksPath points git hooks to another folder"],

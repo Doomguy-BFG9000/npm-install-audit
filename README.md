@@ -6,7 +6,7 @@
 
 A small Node script to run **before** `npm install` on a repo you did not write: a take-home test from a recruiter, a "quick look" project from a stranger, an unknown clone.
 
-It reads `package.json` for install hooks (`preinstall`, `install`, `postinstall`, `prepare`) and dependencies that bypass the npm registry, and scans `.js`, `.cjs`, `.mjs`, `.ts`, `.mts`, `.cts` and `.sh` files for patterns that fake interview repos and malicious packages tend to use.
+It reads `package.json` for install hooks (`preinstall`, `install`, `postinstall`, `prepare`) and dependencies that bypass the npm registry, and scans `.js`, `.cjs`, `.mjs`, `.jsx`, `.ts`, `.mts`, `.cts`, `.tsx` and `.sh` files for patterns that fake interview repos and malicious packages tend to use.
 
 **New in 1.1:** it also checks `.git/hooks`, `.git/config` and `.vscode/tasks.json`. A repo sent as a zip can carry active git hooks that run on `git pull`, `git checkout` or `git commit`, so the attack does not need `npm install` at all.
 
@@ -84,6 +84,7 @@ A clean result is not proof of safety. Obfuscated code, code fetched later, and 
 
 ## Changelog
 
+- **1.2.1:** also scans `.jsx` and `.tsx` files, so code hidden in React components of a Next.js or Vite project is checked too.
 - **1.2.0:** TypeScript files (`.ts`, `.mts`, `.cts`), `--json` output and non-registry dependency checks (thanks @ayushdwivedi-stack, #4); also flags `git://`, bare `user/repo`, `link:` and non-tarball URL dependencies.
 - **1.1.0:** checks `.git/hooks`, risky `.git/config` entries and VS Code `folderOpen` tasks. `node audit.js --version` prints the version.
 - **1.0.0:** install hooks and risky patterns in JS and shell files.

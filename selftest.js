@@ -38,6 +38,7 @@ write("vscodepad/package.json", JSON.stringify({ name: "vscodepad" }));
 write("ts-bad/package.json", JSON.stringify({ name: "ts-bad", scripts: { test: "tsc" } }));
 write("ts-bad/src/setup.ts", 'import { execSync } from "child_process";\nexecSync("echo hi");\n');
 write("ts-bad/src/helper.mts", 'const x = eval("1+1");\n');
+write("ts-bad/src/Panel.tsx", 'const run = new Function("return 1");\nexport const Panel = () => null;\n');
 write("ts-bad/src/types.cts", '// plain type-only file, safe\nexport type Foo = string;\n');
 
 write("ts-clean/package.json", JSON.stringify({ name: "ts-clean" }));
@@ -74,7 +75,7 @@ const check = (name, cond) => {
 
 // Version check (v1.1.0)
 const v = spawnSync(process.execPath, [path.join(__dirname, "audit.js"), "--version"], { encoding: "utf8" });
-check("--version prints version", v.status === 0 && /npm-install-audit 1\.2\.0/.test(v.stdout));
+check("--version prints version", v.status === 0 && /npm-install-audit 1\.2\.1/.test(v.stdout));
 
 // Original checks
 const clean = run(path.join(tmp, "clean"));
@@ -104,6 +105,7 @@ const tsBad = run(path.join(tmp, "ts-bad"));
 check("ts-bad fixture exits 1", tsBad.status === 1);
 check("flags .ts exec in ts file", /runs shell commands/.test(tsBad.stdout));
 check("flags eval in .mts file", /evaluates code at runtime/.test(tsBad.stdout));
+check("scans .tsx files", /Panel\.tsx/.test(tsBad.stdout));
 
 const tsClean = run(path.join(tmp, "ts-clean"));
 check("ts-clean fixture exits 0", tsClean.status === 0);
