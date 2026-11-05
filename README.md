@@ -27,6 +27,14 @@ You got a take-home test from a recruiter, or a stranger asked you to "just run 
 
 ## Quick start
 
+With Node 18 or newer:
+
+```
+npx npm-install-audit ./take-home-task
+```
+
+Or without npm, as a single file:
+
 ```
 curl -O https://raw.githubusercontent.com/cryptostrapon/npm-install-audit/main/audit.js
 node audit.js ./take-home-task
