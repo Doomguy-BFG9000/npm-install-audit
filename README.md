@@ -67,6 +67,7 @@ Exit code is 1 if anything is flagged, 0 if clean, 2 if the path cannot be read.
 ## What it flags
 
 - install hooks that run a command
+- `.pnpmfile.cjs` hook files, which pnpm runs during install even without a `package.json` install script
 - dependencies that bypass the npm registry: git URLs (`git+https`, `git+ssh`, `git://`), `github:`/`gitlab:`/`bitbucket:` and bare `user/repo` shorthands, tarball and other URLs, `file:` and `link:` paths
 - shell execution (`child_process`, `execSync`, `spawn`)
 - runtime code evaluation (`eval`, `new Function`)
