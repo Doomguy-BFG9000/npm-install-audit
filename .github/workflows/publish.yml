@@ -1,7 +1,7 @@
 name: publish
 
 # Publishes to npm when a GitHub release is published.
-# Needs a repository secret NPM_TOKEN (npm granular access token with publish rights).
+# Uses npm trusted publishing (OIDC): no npm token is stored in this repository.
 on:
   release:
     types: [published]
@@ -19,6 +19,8 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
+      - name: Use an npm version that supports trusted publishing
+        run: npm install -g npm@11
       - name: Check that the tag matches package.json
         run: |
           TAG="${GITHUB_REF_NAME#v}"
@@ -28,5 +30,3 @@ jobs:
         run: node selftest.js
       - name: Publish
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
