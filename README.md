@@ -94,6 +94,7 @@ A clean result is not proof of safety. Obfuscated code, code fetched later, and 
 
 ## Changelog
 
+- **1.3.1:** available on npm (`npx npm-install-audit ./repo`). Releases are published from GitHub Actions through npm trusted publishing, with provenance and no stored npm token. No change to the checks.
 - **1.3.0:** flags `.npmrc` and Yarn config files that ship a registry auth token or point installs to a non-npmjs registry, including scoped `@scope:registry` entries.
 - **1.2.1:** also scans `.jsx` and `.tsx` files, so code hidden in React components of a Next.js or Vite project is checked too.
 - **1.2.0:** TypeScript files (`.ts`, `.mts`, `.cts`), `--json` output and non-registry dependency checks (thanks @ayushdwivedi-stack, #4); also flags `git://`, bare `user/repo`, `link:` and non-tarball URL dependencies.
